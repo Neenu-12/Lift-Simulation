@@ -33,8 +33,6 @@ function generator(lift_num,floor_num){
     button_up.style.display = 'none';
   }
 
-  const fitText = require("FitText-UMD");
-
   const button_down = document.createElement('button');
   button_down.setAttribute('class','down');
   button_down.innerText = "Down";
@@ -104,7 +102,7 @@ function mover(destination,pos){
       const lift_list = document.querySelectorAll('.lift');
       if(!(destination_record.includes(destination))){
         lift_list[pos].setAttribute('data-status','busy');
-        const movement = (destination) * (-133);
+        const movement = (destination) * (-124);
         lift_list[pos].style.transform = `translateY(${movement}%)`;
         lift_list[pos].style.transitionDuration = "5s";
         setTimeout(() => {
