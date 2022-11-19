@@ -10,7 +10,6 @@ form.addEventListener('submit',function(e){
 
   for(let i = 0; i < floor_num; i++){
     generator(lift_num,floor_num);
-    // console.log(i);
   }
   lift_appender(lift_num);
 });
@@ -22,14 +21,14 @@ function generator(lift_num,floor_num){
 
   const button_div = document.createElement('div');
   button_div.setAttribute('class','button-div');
-    
+  
   const button_up = document.createElement('button');
   button_up.setAttribute('class','up');
   button_up.innerText = "Up";
   button_up.setAttribute('data-floor',fnum);
   button_up.addEventListener('click',() => lift_move(button_up.getAttribute('data-floor')));
   button_up.addEventListener('click',lift_move(fnum));
-  if(fnum === floor_num -1){
+  if(fnum === floor_num - 1){
     button_up.style.display = 'none';
   }
 
@@ -42,7 +41,7 @@ function generator(lift_num,floor_num){
     button_down.style.display = 'none';
   }
 
-  const lift_div = document.createElement('div');
+  const lift_div = document.createElement('div'); 
   lift_div.setAttribute('class','lift-div');
 
   const floor_big_div = document.createElement('div');
@@ -76,6 +75,13 @@ function lift_appender(lift_num){
     lift.setAttribute('class','lift');
     lift.setAttribute('data-status','free');
     lift.setAttribute('data-initial-position',0);
+
+    const left_door = document.createElement('div');
+    const right_door = document.createElement('div');
+    left_door.setAttribute('class','door');
+    right_door.setAttribute('class','door');
+
+    lift.append(left_door,right_door);
     destination_record.push('0');
     lift_divs[lift_divs.length - 1].append(lift);
     if(i > 0){
@@ -85,8 +91,6 @@ function lift_appender(lift_num){
 }
 
 function lift_move(destination){
-  console.log(destination);
-  console.log(destination_record);
   const lift_list = document.querySelectorAll('.lift');
   for(let l = 0; l < lift_list.length; l++){
       if(lift_list[l].getAttribute('data-initial-position') != destination){
@@ -99,17 +103,37 @@ function lift_move(destination){
 }
 
 function mover(destination,pos){
+      console.log(destination_record);
       const lift_list = document.querySelectorAll('.lift');
       if(!(destination_record.includes(destination))){
         lift_list[pos].setAttribute('data-status','busy');
-        const movement = (destination) * (-124);
-        lift_list[pos].style.transform = `translateY(${movement}%)`;
-        lift_list[pos].style.transitionDuration = "5s";
-        setTimeout(() => {
-          lift_list[pos].setAttribute('data-status','free');
-        },5000);
-        lift_list[pos].setAttribute('data-initial-position',destination);
-        destination_record[pos] = destination;
+        const movement = (destination) * (-130);
+        lift_list[pos].style.transform = `translateY(${movement}px)`;
+        const time_calculation = Math.abs(destination - lift_list[pos].getAttribute('data-initial-position'));
+        lift_list[pos].style.transitionDuration = `${time_calculation * 2}s`;
+        door_mover(lift_list[pos],pos,destination,time_calculation);
     }
 }
 
+function door_mover(current_lift,pos,destination,time_calculation){
+  setTimeout(() => {
+    current_lift.querySelectorAll('.door')[0].style.transform = `translateX(-75%)`;
+    current_lift.querySelectorAll('.door')[0].style.transitionDuration = "2.5s";
+    current_lift.querySelectorAll('.door')[1].style.transform = `translateX(75%)`;
+    current_lift.querySelectorAll('.door')[1].style.transitionDuration = "2.5s";
+  },(time_calculation * 2000));
+
+  setTimeout(() => {
+    current_lift.querySelectorAll('.door')[0].style.transform = `translateX(0%)`;
+    current_lift.querySelectorAll('.door')[0].style.transitionDuration = "2.5s";
+    current_lift.querySelectorAll('.door')[1].style.transform = `translateX(0%)`;
+    current_lift.querySelectorAll('.door')[1].style.transitionDuration = "2.5s";
+  },(time_calculation * 2000) + 2500);
+
+  setTimeout(() => {
+    current_lift.setAttribute('data-status','free');
+  },(time_calculation * 2000) + 5000);
+  
+  current_lift.setAttribute('data-initial-position',destination);
+  destination_record[pos] = destination;
+}
